@@ -37,6 +37,7 @@
         }
     </script>
     <style>
+        html { font-size: 135%; } /* Increase base font size to 135% (~21.6px) */
         body { font-family: 'Inter', sans-serif; background-color: #FAFAFA; color: #18181B; }
         .dark body { background-color: #09090B; color: #FAFAFA; }
         [x-cloak] { display: none !important; }
@@ -146,14 +147,14 @@
 
                 {% if user.is_authenticated %}
                 <div class="flex items-center gap-4">
-                    <span class="text-[13px] text-zinc-500 dark:text-zinc-400 font-medium">{{ user.username }}</span>
+                    <span class="text-lg text-zinc-500 dark:text-zinc-400 font-medium">{{ user.username }}</span>
                     <form action="{% url 'accounts:logout' %}" method="post" class="m-0 border-l border-zinc-200 dark:border-zinc-800 pl-4 h-4 flex items-center">
                         {% csrf_token %}
-                        <button type="submit" class="text-[13px] font-medium text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Logout</button>
+                        <button type="submit" class="text-lg font-medium text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Logout</button>
                     </form>
                 </div>
                 {% else %}
-                <a href="{% url 'accounts:login' %}" class="text-[13px] font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">Sign In</a>
+                <a href="{% url 'accounts:login' %}" class="text-lg font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">Sign In</a>
                 {% endif %}
             </div>
         </div>
@@ -164,43 +165,43 @@
         <div class="h-full px-12 overflow-y-auto">
             <ul class="space-y-6 font-medium mt-4">
                 <li>
-                    <a href="{% url 'dashboard:index' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                    <a href="{% url 'dashboard:index' %}" class="group flex items-center text-lg text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
                         <span class="tracking-wide">Dashboard</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'donors:list' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                    <a href="{% url 'donors:list' %}" class="group flex items-center text-lg text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
                         <span class="tracking-wide">Donors</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'inventory:list' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                    <a href="{% url 'inventory:list' %}" class="group flex items-center text-lg text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
                         <span class="tracking-wide">Inventory</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'requests:list' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                    <a href="{% url 'requests:list' %}" class="group flex items-center text-lg text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
                         <span class="tracking-wide">Requests</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'donations:list' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                    <a href="{% url 'donations:list' %}" class="group flex items-center text-lg text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
                         <span class="tracking-wide">Donations</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'reports:dashboard' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                    <a href="{% url 'reports:dashboard' %}" class="group flex items-center text-lg text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
                         <span class="tracking-wide">Reports</span>
                     </a>
                 </li>
                 <li class="pt-8 mt-2 border-t border-zinc-200/50 dark:border-zinc-800/50">
-                    <a href="{% url 'accounts:profile' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                    <a href="{% url 'accounts:profile' %}" class="group flex items-center text-lg text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
                         <span class="tracking-wide">Profile</span>
                     </a>
                 </li>
                 {% if user.is_superuser %}
                 <li>
-                    <a href="{% url 'accounts:user_list' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                    <a href="{% url 'accounts:user_list' %}" class="group flex items-center text-lg text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
                         <span class="tracking-wide">Users</span>
                     </a>
                 </li>

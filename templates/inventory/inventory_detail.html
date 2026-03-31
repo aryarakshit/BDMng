@@ -6,7 +6,7 @@
 <div class="max-w-3xl mx-auto">
  <div class="mb-6 flex items-center justify-between">
  <div class="flex items-center">
- <a href="{% url 'inventory:list' %}" class="mr-4 text-zinc-500 hover:text-zinc-700">
+ <a href="{% url 'inventory:list' %}" class="mr-4 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
  </a>
  <h1 class="text-2xl font-bold">Blood Unit Detail</h1>
@@ -20,58 +20,58 @@
  <div class="rounded-lg p-6">
  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
  <div>
- <dt class="text-sm font-medium text-zinc-500">Blood Group</dt>
+ <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Blood Group</dt>
  <dd class="mt-1">
- <span class="px-3 py-1 inline-flex text-sm font-semibold rounded-full text-red-800">{{ unit.blood_group }}</span>
+ <span class="px-3 py-1 inline-flex text-sm font-semibold rounded-full text-red-800 dark:text-red-400">{{ unit.blood_group }}</span>
  </dd>
  </div>
  <div>
- <dt class="text-sm font-medium text-zinc-500">Units</dt>
- <dd class="mt-1 text-lg font-bold text-zinc-900">{{ unit.units }}</dd>
+ <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Units</dt>
+ <dd class="mt-1 text-lg font-bold text-zinc-900 dark:text-zinc-100">{{ unit.units }}</dd>
  </div>
  <div>
- <dt class="text-sm font-medium text-zinc-500">Collection Date</dt>
- <dd class="mt-1 text-sm text-zinc-900">{{ unit.collection_date|date:"M d, Y" }}</dd>
+ <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Collection Date</dt>
+ <dd class="mt-1 text-sm text-zinc-900 dark:text-zinc-100">{{ unit.collection_date|date:"M d, Y" }}</dd>
  </div>
  <div>
- <dt class="text-sm font-medium text-zinc-500">Expiry Date</dt>
- <dd class="mt-1 text-sm text-zinc-900">
+ <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Expiry Date</dt>
+ <dd class="mt-1 text-sm text-zinc-900 dark:text-zinc-100">
  {{ unit.expiry_date|date:"M d, Y" }}
  {% if unit.is_expired %}
- <span class="ml-2 text-red-600 font-bold">(Expired)</span>
+ <span class="ml-2 text-red-600 dark:text-red-400 font-bold">(Expired)</span>
  {% elif unit.days_to_expiry <= 7 %}
- <span class="ml-2 text-yellow-600 font-bold">({{ unit.days_to_expiry }} days left)</span>
+ <span class="ml-2 text-yellow-600 dark:text-yellow-400 font-bold">({{ unit.days_to_expiry }} days left)</span>
  {% endif %}
  </dd>
  </div>
  <div>
- <dt class="text-sm font-medium text-zinc-500">Status</dt>
+ <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Status</dt>
  <dd class="mt-1">
  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
- {% if unit.status == 'available' %} text-green-800
- {% elif unit.status == 'reserved' %} text-blue-800
- {% else %} text-zinc-800{% endif %}">
+ {% if unit.status == 'available' %} text-green-800 dark:text-green-400
+ {% elif unit.status == 'reserved' %} text-blue-800 dark:text-blue-400
+ {% else %} text-zinc-800 dark:text-zinc-300{% endif %}">
  {{ unit.get_status_display }}
  </span>
  </dd>
  </div>
  <div>
- <dt class="text-sm font-medium text-zinc-500">Source Donor</dt>
- <dd class="mt-1 text-sm text-zinc-900">
+ <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Source Donor</dt>
+ <dd class="mt-1 text-sm text-zinc-900 dark:text-zinc-100">
  {% if unit.source_donor %}
- <a href="{% url 'donors:detail' unit.source_donor.pk %}" class="text-blue-600 hover:underline">{{ unit.source_donor.full_name }}</a>
+ <a href="{% url 'donors:detail' unit.source_donor.pk %}" class="text-blue-600 dark:text-blue-400 hover:underline">{{ unit.source_donor.full_name }}</a>
  {% else %}
  N/A
  {% endif %}
  </dd>
  </div>
  <div>
- <dt class="text-sm font-medium text-zinc-500">Added By</dt>
- <dd class="mt-1 text-sm text-zinc-900">{{ unit.added_by.username|default:"N/A" }}</dd>
+ <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Added By</dt>
+ <dd class="mt-1 text-sm text-zinc-900 dark:text-zinc-100">{{ unit.added_by.username|default:"N/A" }}</dd>
  </div>
  <div>
- <dt class="text-sm font-medium text-zinc-500">Added On</dt>
- <dd class="mt-1 text-sm text-zinc-900">{{ unit.created_at|date:"M d, Y H:i" }}</dd>
+ <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Added On</dt>
+ <dd class="mt-1 text-sm text-zinc-900 dark:text-zinc-100">{{ unit.created_at|date:"M d, Y H:i" }}</dd>
  </div>
  </div>
  </div>
