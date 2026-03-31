@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Donation Details - Blood Bank{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+ <div class="mb-6 flex items-center">
+ <a href="{% url 'donations:list' %}" class="mr-4 text-zinc-500 hover:text-zinc-700">
+ <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+ </a>
+ <h1 class="text-2xl font-bold">Donation Details</h1>
+ </div>
+
+ <div class="rounded-lg overflow-hidden">
+ <div class="bg-primary px-6 py-4">
+ <h3 class="text-white text-lg font-bold">Donation by {{ donation.donor.full_name }}</h3>
+ </div>
+ <div class="p-6">
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+ <div>
+ <h4 class="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-2">Donor Info</h4>
+ <p class="text-zinc-900 font-medium">{{ donation.donor.full_name }}</p>
+ <p class="text-zinc-600 text-sm">Blood Group: <span class="font-bold text-primary">{{ donation.donor.blood_group }}</span></p>
+ <p class="text-zinc-600 text-sm">Phone: {{ donation.donor.phone }}</p>
+ </div>
+ <div>
+ <h4 class="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-2">Collection Info</h4>
+ <p class="text-zinc-900 font-medium">{{ donation.donation_date }}</p>
+ <p class="text-zinc-600 text-sm">Units Collected: {{ donation.units_collected }} Unit(s)</p>
+ <p class="text-zinc-600 text-sm">Location: {{ donation.camp_location|default:"Hospital" }}</p>
+ </div>
+ <div class="md:col-span-2 border-t pt-4">
+ <h4 class="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-2">Health Vitals</h4>
+ <div class="flex space-x-8">
+ <div>
+ <span class="text-xs text-zinc-500">Hemoglobin</span>
+ <p class="text-sm font-medium">{{ donation.hemoglobin|default:"N/A" }} g/dL</p>
+ </div>
+ <div>
+ <span class="text-xs text-zinc-500">Blood Pressure</span>
+ <p class="text-sm font-medium">{{ donation.blood_pressure|default:"N/A" }}</p>
+ </div>
+ </div>
+ </div>
+ <div class="md:col-span-2 border-t pt-4">
+ <h4 class="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-2">Linked Inventory Unit</h4>
+ {% if donation.blood_unit %}
+ <div class="p-3 rounded flex justify-between items-center">
+ <span class="text-sm text-zinc-700 font-medium">Blood Unit #{{ donation.blood_unit.id }}</span>
+ <span class="px-2 py-0.5 rounded text-xs font-bold text-green-800">Available</span>
+ </div>
+ {% else %}
+ <p class="text-sm text-zinc-500 italic">No linked inventory unit found.</p>
+ {% endif %}
+ </div>
+ {% if donation.remarks %}
+ <div class="md:col-span-2 border-t pt-4">
+ <h4 class="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-2">Remarks</h4>
+ <p class="text-sm text-zinc-700 p-3 rounded italic">{{ donation.remarks }}</p>
+ </div>
+ {% endif %}
+ </div>
+ </div>
+ </div>
+</div>
+{% endblock %}

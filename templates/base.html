@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Blood Bank Management System{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Prevent flash of wrong theme -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#18181b', // zinc-900
+                        secondary: '#52525b', // zinc-500
+                        accent: '#27272a',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444', 
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #FAFAFA; color: #18181B; }
+        .dark body { background-color: #09090B; color: #FAFAFA; }
+        [x-cloak] { display: none !important; }
+        
+        /* Smooth transitions */
+        body, nav, aside, div, a, span, p, h1, h2, h3, h4, td, th, input, select, textarea, button {
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, fill 0.4s ease;
+        }
+
+        /* Minimal scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+        
+        /* Global Minimal Overrides */
+        .dark .bg-white, .dark .bg-gray-50, .dark .bg-gray-100 { background-color: #09090B !important; }
+        .dark .border-gray-100, .dark .border-gray-200, .dark .border-gray-300, .dark .divide-zinc-200, .dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) { border-color: rgba(255,255,255,0.05) !important; }
+        .border-gray-100, .border-gray-200, .border-gray-300, .divide-zinc-200, .divide-gray-200 > :not([hidden]) ~ :not([hidden]) { border-color: rgba(0,0,0,0.05) !important; }
+        
+        .dark .text-gray-900, .dark .text-gray-800 { color: #FAFAFA !important; }
+        .dark .text-gray-700, .dark .text-gray-600 { color: #A1A1AA !important; }
+        .dark .text-gray-500 { color: #71717A !important; }
+
+        /* Form Inputs Minimalist style */
+        input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+        select, textarea {
+            padding: 0.5rem 0.5rem !important;
+            min-height: 2.5rem !important;
+            border: none !important;
+            border-bottom: 1px solid rgba(0,0,0,0.1) !important;
+            border-radius: 0 !important;
+            background-color: transparent !important;
+            font-size: 0.85rem !important;
+            box-shadow: none !important;
+        }
+        .dark input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+        .dark select, .dark textarea {
+            border-bottom-color: rgba(255,255,255,0.15) !important;
+            color: #FAFAFA !important;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none !important;
+            border-bottom-color: #18181B !important;
+            box-shadow: 0 1px 0 0 #18181B !important;
+        }
+        .dark input:focus, .dark select:focus, .dark textarea:focus {
+            outline: none !important;
+            border-bottom-color: #FAFAFA !important;
+            box-shadow: 0 1px 0 0 #FAFAFA !important;
+        }
+        .dark input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+        
+        /* Soften structural shadows */
+        .shadow, .shadow-sm, .shadow-md {
+            box-shadow: none !important;
+        }
+
+        /* Global Minimal Primary Overrides */
+        body .text-primary { color: #18181B; }
+        .dark body .text-primary { color: #FAFAFA; }
+        
+        body .border-primary { border-color: #18181B; }
+        .dark body .border-primary { border-color: #FAFAFA; }
+        
+        body .bg-primary { background-color: #18181B; color: #FAFAFA; }
+        .dark body .bg-primary { background-color: #FAFAFA; color: #18181B; }
+
+        /* Action links inside standard tables */
+        .text-secondary { color: #52525b !important; }
+        .dark .text-secondary { color: #a1a1aa !important; }
+    </style>
+</head>
+<body class="antialiased selection:bg-zinc-200 dark:selection:bg-zinc-800"
+      x-data="{
+          sidebarOpen: window.innerWidth >= 1024,
+          darkMode: localStorage.getItem('theme') === 'dark',
+          toggleTheme() {
+              this.darkMode = !this.darkMode;
+              localStorage.setItem('theme', this.darkMode ? 'dark' : 'light');
+              document.documentElement.classList.toggle('dark', this.darkMode);
+          }
+      }"
+      x-init="document.documentElement.classList.toggle('dark', darkMode)">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 z-50 w-full bg-[#FAFAFA]/90 dark:bg-[#09090B]/90 backdrop-blur-md transition-colors">
+        <div class="px-6 py-5 lg:px-12 flex items-center justify-between">
+            <div class="flex items-center">
+                <button @click="sidebarOpen = !sidebarOpen" class="inline-flex items-center p-2 text-zinc-500 rounded sm:hidden hover:text-zinc-900 focus:outline-none dark:text-zinc-400 dark:hover:text-white transition-colors">
+                    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"><path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path></svg>
+                </button>
+                <a href="{% url 'dashboard:index' %}" class="flex ml-2 sm:ml-0">
+                    <span class="text-xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100">BDMng<span class="text-zinc-400">.</span></span>
+                </a>
+            </div>
+            <div class="flex items-center gap-6">
+                <!-- Theme Toggle Minimal -->
+                <button @click="toggleTheme()" class="text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
+                    <!-- Sun -->
+                    <svg x-show="darkMode" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <!-- Moon -->
+                    <svg x-show="!darkMode" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
+
+                {% if user.is_authenticated %}
+                <div class="flex items-center gap-4">
+                    <span class="text-[13px] text-zinc-500 dark:text-zinc-400 font-medium">{{ user.username }}</span>
+                    <form action="{% url 'accounts:logout' %}" method="post" class="m-0 border-l border-zinc-200 dark:border-zinc-800 pl-4 h-4 flex items-center">
+                        {% csrf_token %}
+                        <button type="submit" class="text-[13px] font-medium text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Logout</button>
+                    </form>
+                </div>
+                {% else %}
+                <a href="{% url 'accounts:login' %}" class="text-[13px] font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors">Sign In</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Minimal -->
+    <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-56 h-screen pt-24 pb-8 transition-transform bg-transparent sm:translate-x-0" :class="{ '-translate-x-full': !sidebarOpen }" aria-label="Sidebar">
+        <div class="h-full px-12 overflow-y-auto">
+            <ul class="space-y-6 font-medium mt-4">
+                <li>
+                    <a href="{% url 'dashboard:index' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                        <span class="tracking-wide">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'donors:list' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                        <span class="tracking-wide">Donors</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'inventory:list' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                        <span class="tracking-wide">Inventory</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'requests:list' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                        <span class="tracking-wide">Requests</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'donations:list' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                        <span class="tracking-wide">Donations</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'reports:dashboard' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                        <span class="tracking-wide">Reports</span>
+                    </a>
+                </li>
+                <li class="pt-8 mt-2 border-t border-zinc-200/50 dark:border-zinc-800/50">
+                    <a href="{% url 'accounts:profile' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                        <span class="tracking-wide">Profile</span>
+                    </a>
+                </li>
+                {% if user.is_superuser %}
+                <li>
+                    <a href="{% url 'accounts:user_list' %}" class="group flex items-center text-[13px] text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100 transition-colors">
+                        <span class="tracking-wide">Users</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Content -->
+    <div class="px-6 py-8 sm:ml-56 sm:pr-12 pt-28 transition-all" :class="{ 'sm:ml-0': !sidebarOpen }">
+        {% include "partials/_messages.html" %}
+        
+        <div class="max-w-7xl mx-auto">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+</body>
+</html>

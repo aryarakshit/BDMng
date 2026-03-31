@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Blood Unit Detail - Blood Bank{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+ <div class="mb-6 flex items-center justify-between">
+ <div class="flex items-center">
+ <a href="{% url 'inventory:list' %}" class="mr-4 text-zinc-500 hover:text-zinc-700">
+ <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+ </a>
+ <h1 class="text-2xl font-bold">Blood Unit Detail</h1>
+ </div>
+ <div class="flex space-x-2">
+ <a href="{% url 'inventory:update' unit.pk %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200">Edit</a>
+ <a href="{% url 'inventory:delete' unit.pk %}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200">Delete</a>
+ </div>
+ </div>
+
+ <div class="rounded-lg p-6">
+ <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+ <div>
+ <dt class="text-sm font-medium text-zinc-500">Blood Group</dt>
+ <dd class="mt-1">
+ <span class="px-3 py-1 inline-flex text-sm font-semibold rounded-full text-red-800">{{ unit.blood_group }}</span>
+ </dd>
+ </div>
+ <div>
+ <dt class="text-sm font-medium text-zinc-500">Units</dt>
+ <dd class="mt-1 text-lg font-bold text-zinc-900">{{ unit.units }}</dd>
+ </div>
+ <div>
+ <dt class="text-sm font-medium text-zinc-500">Collection Date</dt>
+ <dd class="mt-1 text-sm text-zinc-900">{{ unit.collection_date|date:"M d, Y" }}</dd>
+ </div>
+ <div>
+ <dt class="text-sm font-medium text-zinc-500">Expiry Date</dt>
+ <dd class="mt-1 text-sm text-zinc-900">
+ {{ unit.expiry_date|date:"M d, Y" }}
+ {% if unit.is_expired %}
+ <span class="ml-2 text-red-600 font-bold">(Expired)</span>
+ {% elif unit.days_to_expiry <= 7 %}
+ <span class="ml-2 text-yellow-600 font-bold">({{ unit.days_to_expiry }} days left)</span>
+ {% endif %}
+ </dd>
+ </div>
+ <div>
+ <dt class="text-sm font-medium text-zinc-500">Status</dt>
+ <dd class="mt-1">
+ <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+ {% if unit.status == 'available' %} text-green-800
+ {% elif unit.status == 'reserved' %} text-blue-800
+ {% else %} text-zinc-800{% endif %}">
+ {{ unit.get_status_display }}
+ </span>
+ </dd>
+ </div>
+ <div>
+ <dt class="text-sm font-medium text-zinc-500">Source Donor</dt>
+ <dd class="mt-1 text-sm text-zinc-900">
+ {% if unit.source_donor %}
+ <a href="{% url 'donors:detail' unit.source_donor.pk %}" class="text-blue-600 hover:underline">{{ unit.source_donor.full_name }}</a>
+ {% else %}
+ N/A
+ {% endif %}
+ </dd>
+ </div>
+ <div>
+ <dt class="text-sm font-medium text-zinc-500">Added By</dt>
+ <dd class="mt-1 text-sm text-zinc-900">{{ unit.added_by.username|default:"N/A" }}</dd>
+ </div>
+ <div>
+ <dt class="text-sm font-medium text-zinc-500">Added On</dt>
+ <dd class="mt-1 text-sm text-zinc-900">{{ unit.created_at|date:"M d, Y H:i" }}</dd>
+ </div>
+ </div>
+ </div>
+</div>
+{% endblock %}

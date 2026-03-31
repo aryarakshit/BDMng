@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Donation History - Blood Bank{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+ <h1 class="text-2xl font-bold dark:text-white">Donation Log</h1>
+ <a href="{% url 'donations:create' %}" class="bg-primary hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+ Record New Donation
+ </a>
+</div>
+
+<!-- Search -->
+<div class="p-4 rounded-lg mb-6">
+ <form method="get" class="flex gap-4">
+ <div class="flex-1">
+ <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search by donor name or phone..." class="w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-gray-700 dark:text-zinc-200 focus:border-primary focus:ring-primary sm:text-sm">
+ </div>
+ <button type="submit" class="bg-secondary hover:bg-gray-800 text-white font-bold py-2 px-4 rounded transition duration-200">
+ Search
+ </button>
+ </form>
+</div>
+
+<div class="rounded-lg overflow-hidden">
+ <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-800">
+ <thead class="dark:bg-gray-700">
+ <tr>
+ <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Donor</th>
+ <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Blood Group</th>
+ <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Units Collected</th>
+ <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Date</th>
+ <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Location</th>
+ <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
+ </tr>
+ </thead>
+ <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
+ {% for donation in donations %}
+ <tr class="hover:bg-zinc-100 dark:hover:bg-zinc-800/50">
+ <td class="px-6 py-4 whitespace-nowrap">
+ <div class="text-sm font-medium text-zinc-900 dark:text-zinc-200">{{ donation.donor.full_name }}</div>
+ </td>
+ <td class="px-6 py-4 whitespace-nowrap">
+ <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-red-800 dark:text-red-300">
+ {{ donation.donor.blood_group }}
+ </span>
+ </td>
+ <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-200 font-bold">
+ {{ donation.units_collected }} Unit(s)
+ </td>
+ <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+ {{ donation.donation_date }}
+ </td>
+ <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+ {{ donation.camp_location|default:"Hospital" }}
+ </td>
+ <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+ <a href="{% url 'donations:detail' donation.pk %}" class="text-secondary dark:text-blue-400 hover:text-zinc-900 dark:hover:text-blue-300">View Details</a>
+ </td>
+ </tr>
+ {% empty %}
+ <tr>
+ <td colspan="6" class="px-6 py-10 text-center text-zinc-500 dark:text-zinc-400 italic">
+ No donation records found.
+ </td>
+ </tr>
+ {% endfor %}
+ </tbody>
+ </table>
+</div>
+
+{% if is_paginated %}
+<div class="mt-4">
+ {% include "partials/_pagination.html" %}
+</div>
+{% endif %}
+{% endblock %}

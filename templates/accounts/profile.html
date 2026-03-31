@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}My Profile - Blood Bank{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+ <h1 class="text-2xl font-bold mb-6 dark:text-white">User Profile</h1>
+
+ <div class="rounded-lg overflow-hidden">
+ <div class="p-6 border-b border-zinc-200 dark:border-zinc-800 dark:bg-gray-700">
+ <div class="flex items-center">
+ <div class="h-16 w-16 rounded-full bg-primary flex items-center justify-center text-white text-2xl font-bold">
+ {{ user.username|first|upper }}
+ </div>
+ <div class="ml-4">
+ <h2 class="text-xl font-bold text-zinc-900 dark:text-white">{{ user.get_full_name|default:user.username }}</h2>
+ <p class="text-sm text-zinc-500 dark:text-zinc-400">Joined on {{ user.date_joined|date:"M d, Y" }}</p>
+ </div>
+ </div>
+ </div>
+ 
+ <form method="post" class="p-6 space-y-6">
+ {% csrf_token %}
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+ <div>
+ <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1">First Name</label>
+ {% render_field form.first_name class="w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-gray-700 dark:text-zinc-200 focus:border-primary focus:ring-primary sm:text-sm" %}
+ </div>
+ <div>
+ <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1">Last Name</label>
+ {% render_field form.last_name class="w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-gray-700 dark:text-zinc-200 focus:border-primary focus:ring-primary sm:text-sm" %}
+ </div>
+ <div class="md:col-span-2">
+ <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1">Email Address</label>
+ {% render_field form.email class="w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-gray-700 dark:text-zinc-200 focus:border-primary focus:ring-primary sm:text-sm" %}
+ </div>
+ </div>
+
+ <div class="flex justify-end pt-4">
+ <button type="submit" class="bg-primary hover:bg-red-700 text-white font-bold py-2 px-6 rounded transition duration-200">
+ Update Profile
+ </button>
+ </div>
+ </form>
+ </div>
+
+ <!-- Stats Section -->
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+ <div class="p-6 rounded-lg border border-zinc-200 dark:border-zinc-800">
+ <h3 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase mb-4 tracking-wider">Account Role</h3>
+ <div class="flex items-center">
+ <span class="px-3 py-1 rounded-full text-xs font-bold {% if user.is_superuser %} text-red-800 dark:text-red-300{% else %} text-blue-800 dark:text-blue-300{% endif %}">
+ {% if user.is_superuser %}Superuser{% else %}Staff Personnel{% endif %}
+ </span>
+ </div>
+ </div>
+ <div class="p-6 rounded-lg border border-zinc-200 dark:border-zinc-800">
+ <h3 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase mb-4 tracking-wider">Security</h3>
+ <a href="{% url 'accounts:password_change' %}" class="text-sm text-primary font-bold hover:underline flex items-center">
+ <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+ Change Password
+ </a>
+ </div>
+ </div>
+</div>
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Record Donation - Blood Bank{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto" x-data="donorSearch()">
+ <div class="mb-6 flex items-center">
+ <a href="{% url 'donations:list' %}" class="mr-4 text-zinc-500 hover:text-zinc-700">
+ <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+ </a>
+ <h1 class="text-2xl font-bold">Record New Donation</h1>
+ </div>
+
+ <div class="rounded-lg p-6">
+ <form method="post" novalidate>
+ {% csrf_token %}
+ 
+ <div class="space-y-6">
+ <!-- Donor Search Section -->
+ <div class="relative">
+ <label for="donor_search" class="block text-sm font-medium text-zinc-700 mb-1">Search Donor</label>
+ <input type="text" 
+ id="donor_search"
+ x-model="query" 
+ @input.debounce.300ms="search()"
+ placeholder="Search by name or phone..." 
+ class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm"
+ :class="{'border-red-500': error}">
+ 
+ <!-- Search Results Dropdown -->
+ <div x-show="results.length > 0" 
+ x-cloak
+ class="absolute z-10 w-full mt-1 border border-zinc-200 rounded-md max-h-60 overflow-y-auto">
+ <template x-for="result in results" :key="result.id">
+ <div @click="selectDonor(result)" 
+ class="px-4 py-2 cursor-pointer hover:bg-zinc-100 flex justify-between items-center"
+ :class="{'opacity-50 cursor-not-allowed': !result.eligible}">
+ <div>
+ <span class="font-medium text-sm" x-text="result.text"></span>
+ <template x-if="!result.eligible">
+ <span class="ml-2 text-xs text-red-600 font-bold">(Ineligible)</span>
+ </template>
+ </div>
+ <span class="px-2 py-0.5 rounded-full text-xs font-bold text-red-800" x-text="result.blood_group"></span>
+ </div>
+ </template>
+ </div>
+
+ <!-- Selected Donor Display -->
+ <div x-show="selectedDonor" x-cloak class="mt-2 p-3 bg-green-50 border border-green-200 rounded-md flex justify-between items-center">
+ <div class="text-sm text-green-800">
+ Selected: <span class="font-bold" x-text="selectedDonor ? selectedDonor.text : ''"></span>
+ </div>
+ <button type="button" @click="clearSelection()" class="text-green-600 hover:text-green-800">
+ <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+ </button>
+ </div>
+
+ {% render_field form.donor_id x-model="donorId" %}
+ {% if form.donor_id.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.donor_id.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+ <div>
+ <label for="{{ form.donation_date.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Donation Date</label>
+ {% render_field form.donation_date class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.donation_date.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.donation_date.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div>
+ <label for="{{ form.units_collected.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Units Collected</label>
+ {% render_field form.units_collected class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.units_collected.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.units_collected.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div>
+ <label for="{{ form.hemoglobin.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Hemoglobin (g/dL)</label>
+ {% render_field form.hemoglobin class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.hemoglobin.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.hemoglobin.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div>
+ <label for="{{ form.blood_pressure.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Blood Pressure</label>
+ {% render_field form.blood_pressure class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.blood_pressure.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.blood_pressure.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div class="col-span-2">
+ <label for="{{ form.camp_location.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Camp/Location</label>
+ {% render_field form.camp_location class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.camp_location.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.camp_location.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div class="col-span-2">
+ <label for="{{ form.remarks.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Remarks</label>
+ {% render_field form.remarks class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.remarks.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.remarks.errors.0 }}</p>
+ {% endif %}
+ </div>
+ </div>
+ </div>
+
+ <div class="mt-8 flex justify-end space-x-3">
+ <a href="{% url 'donations:list' %}" class="hover:bg-gray-200 text-zinc-800 font-bold py-2 px-6 rounded transition duration-200">
+ Cancel
+ </a>
+ <button type="submit" 
+ class="bg-primary hover:bg-red-700 text-white font-bold py-2 px-6 rounded transition duration-200 disabled:opacity-50"
+ :disabled="!selectedDonor">
+ Record Donation
+ </button>
+ </div>
+ </form>
+ </div>
+</div>
+
+<script>
+function donorSearch() {
+ return {
+ query: '',
+ results: [],
+ selectedDonor: null,
+ donorId: '',
+ error: false,
+ 
+ async search() {
+ if (this.query.length < 2) {
+ this.results = [];
+ return;
+ }
+ try {
+ const response = await fetch(`{% url 'donations:search_donor' %}?q=${this.query}`);
+ const data = await response.json();
+ this.results = data.results;
+ } catch (e) {
+ console.error('Search failed', e);
+ }
+ },
+ 
+ selectDonor(donor) {
+ if (!donor.eligible) return;
+ this.selectedDonor = donor;
+ this.donorId = donor.id;
+ this.results = [];
+ this.query = '';
+ },
+ 
+ clearSelection() {
+ this.selectedDonor = null;
+ this.donorId = '';
+ }
+ }
+}
+</script>
+{% endblock %}

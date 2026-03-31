@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}{% if object %}Edit Donor{% else %}Register Donor{% endif %} - Blood Bank{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+ <div class="mb-6 flex items-center">
+ <a href="{% url 'donors:list' %}" class="mr-4 text-zinc-500 hover:text-zinc-700">
+ <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+ </a>
+ <h1 class="text-2xl font-bold">{% if object %}Edit Donor: {{ object.full_name }}{% else %}Register New Donor{% endif %}</h1>
+ </div>
+
+ <div class="rounded-lg p-6">
+ <form method="post" novalidate>
+ {% csrf_token %}
+ 
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+ <div class="col-span-2">
+ <label for="{{ form.full_name.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Full Name</label>
+ {% render_field form.full_name class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.full_name.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.full_name.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div>
+ <label for="{{ form.date_of_birth.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Date of Birth</label>
+ {% render_field form.date_of_birth class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.date_of_birth.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.date_of_birth.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div>
+ <label for="{{ form.gender.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Gender</label>
+ {% render_field form.gender class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.gender.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.gender.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div>
+ <label for="{{ form.blood_group.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Blood Group</label>
+ {% render_field form.blood_group class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.blood_group.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.blood_group.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div>
+ <label for="{{ form.phone.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Phone Number</label>
+ {% render_field form.phone class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.phone.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.phone.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div class="col-span-2">
+ <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Email Address (Optional)</label>
+ {% render_field form.email class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.email.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div class="col-span-2">
+ <label for="{{ form.address.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Address</label>
+ {% render_field form.address class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.address.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.address.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div class="col-span-2">
+ <label for="{{ form.medical_history.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Medical History</label>
+ {% render_field form.medical_history class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.medical_history.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.medical_history.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div>
+ <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Status</label>
+ {% render_field form.status class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.status.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.status.errors.0 }}</p>
+ {% endif %}
+ </div>
+ </div>
+
+ <div class="mt-8 flex justify-end space-x-3">
+ <a href="{% url 'donors:list' %}" class="hover:bg-gray-200 text-zinc-800 font-bold py-2 px-6 rounded transition duration-200">
+ Cancel
+ </a>
+ <button type="submit" class="bg-primary hover:bg-red-700 text-white font-bold py-2 px-6 rounded transition duration-200">
+ {% if object %}Update Donor{% else %}Register Donor{% endif %}
+ </button>
+ </div>
+ </form>
+ </div>
+</div>
+{% endblock %}

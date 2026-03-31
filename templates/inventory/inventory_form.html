@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}{% if object %}Edit Blood Unit{% else %}Add Blood Unit{% endif %} - Blood Bank{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+ <div class="mb-6 flex items-center">
+ <a href="{% url 'inventory:list' %}" class="mr-4 text-zinc-500 hover:text-zinc-700">
+ <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+ </a>
+ <h1 class="text-2xl font-bold">{% if object %}Edit Blood Unit{% else %}Add Blood Unit to Inventory{% endif %}</h1>
+ </div>
+
+ <div class="rounded-lg p-6">
+ <form method="post" novalidate>
+ {% csrf_token %}
+ 
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+ <div>
+ <label for="{{ form.blood_group.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Blood Group</label>
+ {% render_field form.blood_group class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.blood_group.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.blood_group.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div>
+ <label for="{{ form.units.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Units (Quantity)</label>
+ {% render_field form.units class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.units.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.units.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div>
+ <label for="{{ form.collection_date.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Collection Date</label>
+ {% render_field form.collection_date class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.collection_date.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.collection_date.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div>
+ <label for="{{ form.expiry_date.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Expiry Date</label>
+ {% render_field form.expiry_date class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.expiry_date.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.expiry_date.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div class="col-span-2">
+ <label for="{{ form.source_donor.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Source Donor (Optional)</label>
+ {% render_field form.source_donor class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.source_donor.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.source_donor.errors.0 }}</p>
+ {% endif %}
+ </div>
+
+ <div>
+ <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-zinc-700 mb-1">Status</label>
+ {% render_field form.status class="w-full rounded-md border-zinc-300 focus:border-primary focus:ring-primary sm:text-sm" %}
+ {% if form.status.errors %}
+ <p class="mt-1 text-sm text-red-600">{{ form.status.errors.0 }}</p>
+ {% endif %}
+ </div>
+ </div>
+
+ {% if form.non_field_errors %}
+ <div class="mt-4 bg-red-50 border border-red-200 rounded p-3">
+ {% for error in form.non_field_errors %}
+ <p class="text-sm text-red-600">{{ error }}</p>
+ {% endfor %}
+ </div>
+ {% endif %}
+
+ <div class="mt-8 flex justify-end space-x-3">
+ <a href="{% url 'inventory:list' %}" class="hover:bg-gray-200 text-zinc-800 font-bold py-2 px-6 rounded transition duration-200">
+ Cancel
+ </a>
+ <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded transition duration-200">
+ {% if object %}Update{% else %}Save{% endif %} Blood Unit
+ </button>
+ </div>
+ </form>
+ </div>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+Django>=5.0
+psycopg2-binary
+django-widget-tweaks
+django-filter
+djangorestframework
+reportlab
+openpyxl
+celery
+redis
+python-decouple
+Pillow
+django-environ

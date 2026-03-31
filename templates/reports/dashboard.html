@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Analytics - Blood Bank{% endblock %}
+
+{% block content %}
+<div class="mb-10 flex justify-between items-end">
+ <div>
+   <h1 class="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white">Reports & Analytics</h1>
+   <p class="text-sm text-zinc-500 mt-1">Overview of blood bank activities.</p>
+ </div>
+ <div class="flex space-x-3 text-sm">
+ <a href="{% url 'reports:export-pdf' %}" class="border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium py-2 px-4 rounded-md transition duration-200 flex items-center">
+ <svg class="w-4 h-4 mr-2 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+ PDF
+ </a>
+ <a href="{% url 'reports:export-excel' %}" class="border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium py-2 px-4 rounded-md transition duration-200 flex items-center">
+ <svg class="w-4 h-4 mr-2 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+ Excel
+ </a>
+ </div>
+</div>
+
+<!-- Filters -->
+<div class="mb-10">
+ <form method="get" class="flex flex-wrap items-end gap-4">
+ <div>
+ <label class="block text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-1.5">Start Date</label>
+ <input type="date" name="start_date" value="{{ start_date }}" class="rounded-md border-zinc-200 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300 text-sm focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-400">
+ </div>
+ <div>
+ <label class="block text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-1.5">End Date</label>
+ <input type="date" name="end_date" value="{{ end_date }}" class="rounded-md border-zinc-200 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300 text-sm focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-400">
+ </div>
+ <button type="submit" class="bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-5 py-2 rounded-md text-sm font-medium hover:bg-zinc-800 dark:hover:bg-white transition-colors">Apply</button>
+ </form>
+</div>
+
+<!-- KPI Summary Section -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12" x-data="kpiData()" x-init="fetchKPIs()">
+ <div class="px-2">
+ <p class="text-[13px] font-medium text-zinc-500 dark:text-zinc-400 mb-2">New Donors (Month)</p>
+ <p class="text-4xl font-light tracking-tight text-zinc-900 dark:text-zinc-100" x-text="kpis.total_donors">...</p>
+ </div>
+ <div class="px-2">
+ <p class="text-[13px] font-medium text-zinc-500 dark:text-zinc-400 mb-2">Units Collected (Month)</p>
+ <p class="text-4xl font-light tracking-tight text-zinc-900 dark:text-zinc-100" x-text="kpis.total_units">...</p>
+ </div>
+ <div class="px-2">
+ <p class="text-[13px] font-medium text-zinc-500 dark:text-zinc-400 mb-2">New Requests (Month)</p>
+ <p class="text-4xl font-light tracking-tight text-zinc-900 dark:text-zinc-100" x-text="kpis.total_requests">...</p>
+ </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+ <!-- Charts -->
+ <div>
+ <h3 class="text-sm font-medium text-zinc-900 dark:text-zinc-200 mb-6">Donation Trend (Last 12 Months)</h3>
+ <div style="position: relative; height: 260px; width: 100%;">
+ <canvas id="trendChart"></canvas>
+ </div>
+ </div>
+ <div>
+ <h3 class="text-sm font-medium text-zinc-900 dark:text-zinc-200 mb-6">Blood Group Distribution</h3>
+ <div style="position: relative; height: 260px; width: 100%;">
+ <canvas id="distChart"></canvas>
+ </div>
+ </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+ <!-- Leaderboard -->
+ <div class="lg:col-span-2">
+ <div class="flex items-center justify-between mb-6">
+ <h3 class="text-sm font-medium text-zinc-900 dark:text-zinc-200">Top 10 Donors</h3>
+ <span class="text-[11px] font-medium text-zinc-400 uppercase tracking-widest">Leaderboard</span>
+ </div>
+ <table class="w-full text-left border-collapse">
+ <thead class="border-b border-zinc-100 dark:border-zinc-800">
+ <tr>
+ <th class="pb-3 text-[12px] text-zinc-400 dark:text-zinc-500 font-normal">Donor</th>
+ <th class="pb-3 text-[12px] text-zinc-400 dark:text-zinc-500 font-normal">Group</th>
+ <th class="pb-3 text-[12px] text-zinc-400 dark:text-zinc-500 text-right font-normal">Donations</th>
+ </tr>
+ </thead>
+ <tbody class="text-sm">
+ {% for donor in top_donors %}
+ <tr class="group border-b border-zinc-50 dark:border-zinc-800/50 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
+ <td class="py-3 font-medium text-zinc-800 dark:text-zinc-200">{{ donor.full_name }}</td>
+ <td class="py-3">
+ <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400">{{ donor.blood_group }}</span>
+ </td>
+ <td class="py-3 text-right font-medium text-zinc-600 dark:text-zinc-400">{{ donor.donation_count }}</td>
+ </tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ </div>
+
+ <!-- Critical Stock -->
+ <div>
+ <div class="flex items-center mb-6">
+ <div class="w-1.5 h-1.5 rounded-full bg-red-500 mr-2.5"></div>
+ <h3 class="text-sm font-medium text-zinc-900 dark:text-zinc-200">Critical Stock Alerts</h3>
+ </div>
+ <div class="space-y-1">
+ {% for item in critical_stock %}
+ <div class="flex justify-between items-center py-2.5 border-b border-zinc-100 dark:border-zinc-800/50">
+ <span class="text-sm font-medium text-zinc-800 dark:text-zinc-200">{{ item.group }}</span>
+ <span class="text-sm text-red-500">{{ item.count }} left</span>
+ </div>
+ {% empty %}
+ <p class="text-sm text-zinc-500 dark:text-zinc-400 pt-2">Inventory levels are currently stable.</p>
+ {% endfor %}
+ </div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function kpiData() {
+ return {
+ kpis: { total_donors: 0, total_units: 0, total_requests: 0 },
+ async fetchKPIs() {
+ const res = await fetch('{% url "reports:api-kpi-summary" %}');
+ this.kpis = await res.json();
+ }
+ }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+ const isDark = document.documentElement.classList.contains('dark');
+ const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+ const textColor = isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)';
+
+ // Trend Chart
+ const trendRes = await fetch('{% url "reports:api-donation-trend" %}');
+ const trendData = await trendRes.json();
+ new Chart(document.getElementById('trendChart'), {
+ type: 'line',
+ data: {
+ labels: trendData.labels,
+ datasets: [{
+ label: 'Donations',
+ data: trendData.data,
+ borderColor: '#C0392B',
+ borderWidth: 2,
+ pointBackgroundColor: '#C0392B',
+ pointRadius: 0,
+ pointHoverRadius: 4,
+ tension: 0.4,
+ fill: false
+ }]
+ },
+ options: { 
+ responsive: true, 
+ maintainAspectRatio: false,
+ plugins: { legend: { display: false } },
+ scales: { 
+ x: { grid: { display: false }, border: { display: false }, ticks: { color: textColor, font: { size: 10 } } },
+ y: { grid: { color: gridColor }, border: { display: false }, beginAtZero: true, ticks: { color: textColor, font: { size: 10 }, padding: 10 } }
+ },
+ interaction: { mode: 'index', intersect: false }
+ }
+ });
+
+ // Distribution Chart
+ const distRes = await fetch("{% url 'reports:api-blood-group-distribution' %}");
+ const distData = await distRes.json();
+ new Chart(document.getElementById('distChart'), {
+ type: 'doughnut',
+ data: {
+ labels: distData.labels,
+ datasets: [{
+ data: distData.data,
+ backgroundColor: [
+ '#C0392B', '#E74C3C', '#9B59B6', '#3498DB', 
+ '#27AE60', '#F1C40F', '#E67E22', '#34495E'
+ ],
+ borderWidth: 0,
+ hoverOffset: 4
+ }]
+ },
+ options: { 
+ responsive: true, 
+ maintainAspectRatio: false,
+ cutout: '80%',
+ plugins: {
+ legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 6, color: textColor, font: { size: 11 } } }
+ }
+ }
+ });
+});
+</script>
+{% endblock %}
